@@ -16,6 +16,7 @@ buildscript {
 
 plugins {
 	alias(libs.plugins.org.gradle.wrapper.upgrade)
+	id 'info.solidsoft.pitest' version '1.15.0' apply false
 }
 
 apply plugin: 'io.spring.nohttp'
@@ -93,6 +94,28 @@ allprojects {
 					task.enabled = false
 				}
 			}
+		}
+	}
+	apply plugin: 'info.solidsoft.pitest'
+	apply plugin: 'jacoco'
+	pitest {
+		junit5PluginVersion = '1.2.1'
+		targetClasses = ['org.springframework.security.*']
+		threads = 4
+		outputFormats = ['XML', 'HTML']
+		timestampedReports = false
+		verbose = true
+	}
+
+	dependencies {
+		pitest "org.pitest:pitest-junit5-plugin:1.2.1"
+	}
+
+	test {
+		useJUnitPlatform()
+
+		testLogging {
+			events "PASSED", "SKIPPED", "FAILED"
 		}
 	}
 }
